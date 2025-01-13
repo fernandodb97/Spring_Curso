@@ -4,46 +4,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 import curso.spring.curso.dao.UsuarioDAO;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.*;
 
 import curso.spring.curso.model.Usuario;
 
 @RestController
-public class UsuarioController implements UsuarioDAO {
+public class UsuarioController{
 
-	@RequestMapping(value="usuarios")
+
+    @Autowired
+	private UsuarioDAO usuarioDAO;
+	
+	@RequestMapping(value="api/usuarios")
 	public List<Usuario> obtenerUsuarios() {
-		List<Usuario> listaUsuarios = new ArrayList<>();
+
+		return usuarioDAO.obtenerUsuarios();
+	}
+
+	@RequestMapping(value="api/usuario/{id}", method = RequestMethod.GET)
+	public Usuario obtenerUsuario(@PathVariable String id) {
 		Usuario usuarion = new Usuario();
-		usuarion.setUsuarioId(Long.valueOf(1));
+		usuarion.setUsuarioId(Long.valueOf(5));
 		usuarion.setApellido("Delgado");
 		usuarion.setContaseña("123456");
 		usuarion.setEmail("fernando.delgado@gmail.com");
 		usuarion.setTelefono("+5612345678");
 		usuarion.setNombre("Fernando");
-		Usuario usuarion2 = new Usuario();
-		usuarion2.setUsuarioId(Long.valueOf(2));
-		usuarion2.setApellido("Delgado");
-		usuarion2.setContaseña("123456");
-		usuarion2.setEmail("fernando.delgado@gmail.com");
-		usuarion2.setTelefono("+5612345678");
-		usuarion2.setNombre("Fernando");
-		Usuario usuarion3 = new Usuario();
-		usuarion3.setUsuarioId(Long.valueOf(3));
-		usuarion3.setApellido("Delgado");
-		usuarion3.setContaseña("123456");
-		usuarion3.setEmail("fernando.delgado@gmail.com");
-		usuarion3.setTelefono("+5612345678");
-		usuarion3.setNombre("Fernando");
-		listaUsuarios.add(usuarion);
-		listaUsuarios.add(usuarion2);
-		listaUsuarios.add(usuarion3);
-		return listaUsuarios;
+		return usuarion;
 	}
-	
-	@RequestMapping(value="usuario_editar/{id}")
+
+
+	@RequestMapping(value="api/usuario_editar/{id}")
 	public Usuario editarUsuario(@PathVariable String id) {
 		Usuario usuarion = new Usuario();
 		usuarion.setUsuarioId(Long.valueOf(5));
@@ -55,19 +48,17 @@ public class UsuarioController implements UsuarioDAO {
 		return usuarion;
 	}
 
-	@RequestMapping(value="usuario_eliminar/{id}")
-	public Usuario eliminarUsuario(@PathVariable String id) {
-		Usuario usuarion = new Usuario();
-		usuarion.setUsuarioId(Long.valueOf(5));
-		usuarion.setApellido("Delgado");
-		usuarion.setContaseña("123456");
-		usuarion.setEmail("fernando.delgado@gmail.com");
-		usuarion.setTelefono("+5612345678");
-		usuarion.setNombre("Fernando");
-		return usuarion;
+	@RequestMapping(value="api/usuario_eliminar/{id}", method = RequestMethod.DELETE)
+	public void eliminarUsuario(@PathVariable String id) {
+		usuarioDAO.eliminarUsuario(id);
+	}
+	@RequestMapping(value="api/usuario_registrar", method = RequestMethod.POST)
+	public void registrarUsuario(@RequestBody Usuario usuario) {
+		usuarioDAO.registrarUsuario(usuario);
 	}
 
-	@RequestMapping(value="usuario_insertar/{id}")
+
+	@RequestMapping(value="api/usuario_insertar/{id}")
 	public Usuario insertarUsuario(@PathVariable String id) {
 		Usuario usuarion = new Usuario();
 		usuarion.setUsuarioId(Long.valueOf(5));

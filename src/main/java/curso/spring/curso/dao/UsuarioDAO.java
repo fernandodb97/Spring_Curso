@@ -6,5 +6,11 @@ import org.apache.catalina.LifecycleState;
 import java.util.List;
 
 public interface UsuarioDAO {
-    List<Usuario> obtenerUsuarios();
+    public List<Usuario> obtenerUsuarios();
+
+    public void eliminarUsuario(String id);
+
+    public void registrarUsuario(Usuario usuario);
+
+    public boolean validarUsuario(Usuario usuario);
 }
