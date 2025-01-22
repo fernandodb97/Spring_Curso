@@ -1,6 +1,8 @@
 package curso.spring.curso.dao;
 
 import curso.spring.curso.model.Usuario;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -34,13 +36,20 @@ public class UsuarioDAOImp implements UsuarioDAO{
     }
 
     @Override
-    public boolean validarUsuario(Usuario usuario) {
-        String query = "FROM Usuario WHERE email= :email AND contaseña = :contraseña";
+    public Usuario obtnerUsuarioCredenciales(Usuario usuario) {
+        String query = "FROM Usuario WHERE email= :email";
 
         List<Usuario> listaUsuarios = entityManager.createQuery(query)
                 .setParameter("email", usuario.getEmail())
-                .setParameter("contraseña", usuario.getContaseña())
                 .getResultList();
-        return !listaUsuarios.isEmpty();
+
+        if (listaUsuarios.isEmpty()){return null;}
+        String claveHashed = listaUsuarios.get(0).getContaseña();
+        Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+
+        if(argon2.verify(claveHashed, usuario.getContaseña())){
+            return listaUsuarios.get(0);
+        }
+        return null;
     }
 }

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import curso.spring.curso.dao.UsuarioDAO;
+import curso.spring.curso.utils.JWTUtil;
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +19,14 @@ public class UsuarioController{
 
     @Autowired
 	private UsuarioDAO usuarioDAO;
-	
+	@Autowired
+	private JWTUtil jwtUtil;
 	@RequestMapping(value="api/usuarios")
-	public List<Usuario> obtenerUsuarios() {
-
+	public List<Usuario> obtenerUsuarios(@RequestHeader(value = "Authorization") String token) {
+		String idUsuario = jwtUtil.getKey(token);
+		if(idUsuario == null){
+			return new ArrayList<>();
+		}
 		return usuarioDAO.obtenerUsuarios();
 	}
 
@@ -54,6 +61,11 @@ public class UsuarioController{
 	}
 	@RequestMapping(value="api/usuario_registrar", method = RequestMethod.POST)
 	public void registrarUsuario(@RequestBody Usuario usuario) {
+		Argon2 argon2 = Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id);
+		String hash = argon2.hash(1,1024,1,usuario.getContaseña());
+		usuario.setContaseña(hash);
+
+
 		usuarioDAO.registrarUsuario(usuario);
 	}
 

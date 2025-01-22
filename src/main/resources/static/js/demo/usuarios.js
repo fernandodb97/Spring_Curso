@@ -3,20 +3,24 @@ $(document).ready(function() {
   cargarUsuarios();
   $('#usuarios').DataTable();
 });
-
+function getHeaders(){
+  return  {
+    'Accept': 'application/json',
+    'Content-Type':'application/json',
+    'Authorization': localStorage.token
+  }
+}
 async function cargarUsuarios() {
   try {
     const request = await fetch('api/usuarios',{
       method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type':'application/json'
-      }
+      headers: getHeaders()
     });
     const usuarios = await request.json();
     let listadoValores = '';
     for(let usuario of usuarios){
       let botonEliminar = '<a href=\"#\" onclick="eliminarUsuario('+usuario.usuarioId+')" class=\"btn btn-danger btn-circle\"><i class=\"fas fa-trash\"></i></a>';
+      let telefonoTexto = usuario.telefono == null ? '-' : usuario.telefono;
       let usuarioValores= ' <tr><td>' +
            usuario.usuarioId +
            '</td><td>' +
@@ -24,7 +28,7 @@ async function cargarUsuarios() {
            '</td><td>' +
            usuario.email +
            '</td><td>' +
-           usuario.telefono +
+          telefonoTexto +
            '</td><td>' +
            botonEliminar +
            '</td></tr>';
@@ -39,9 +43,6 @@ async function cargarUsuarios() {
 async function eliminarUsuario(id){
   const request = await fetch('api/usuario_eliminar/'+id,{
     method: 'DELETE',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type':'application/json'
-    }
+    headers: getHeaders()
   });
 }
